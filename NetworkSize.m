@@ -2,19 +2,22 @@ classdef NetworkSize < Chromosome
     %NETWORKSIZE A Chromosome that describes the size of the hidden layer
     %of a phenotypical neural network.
     %   Detailed explanation goes here
+    
+    properties
+        hiddenNeuronCount;
+    end
 
     methods
         function obj = NetworkSize(hiddenNeuronCount)
             %NETWORKSIZE Construct an instance of this class
-            %   hiddenNeuronCount: an integer
+            %   hiddenNeuronCount: integer
             obj = obj@Chromosome();
             obj.hiddenNeuronCount = hiddenNeuronCount;
         end
         
-        function outputArg = method1(obj,inputArg)
-            %METHOD1 Summary of this method goes here
-            %   Detailed explanation goes here
-            outputArg = obj.Property1 + inputArg;
+        function newObj = replicate(obj)
+            newObj = replicate@Chromosome(obj);
+            newObj.hiddenNeuronCount = obj.hiddenNeuronCount;
         end
     end
 end
