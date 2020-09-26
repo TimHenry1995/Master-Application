@@ -16,11 +16,10 @@ classdef LearningRateCalculator < Chromosome
         end
         
         function newObj = replicate(obj)
-            newObj = replicate@Chromosome(obj);
-            newObj.alpha = obj.alpha; newObj.decay = obj.decay;
+            newObj = LearningRateCalculator(obj.alpha, obj.decay);
         end
         
-        function [] = call(obj)
+        function [obj] = call(obj)
             %METHOD1 Summary of this method goes here
             %   Detailed explanation goes here
             obj.alpha = obj.alpha * obj.decay;

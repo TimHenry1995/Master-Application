@@ -16,8 +16,7 @@ classdef ActivationFunction < Chromosome
         end
         
         function newObj = replicate(obj)
-            newObj = replicate@Chromosome(obj);
-            newObj.kind = obj.kind; newObj.scale = obj.scale;
+            newObj = ActivationFunction(obj.kind, obj.scale);
         end
         
         function [f] = call(obj)

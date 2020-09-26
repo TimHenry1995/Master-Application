@@ -16,8 +16,7 @@ classdef NetworkSize < Chromosome
         end
         
         function newObj = replicate(obj)
-            newObj = replicate@Chromosome(obj);
-            newObj.hiddenNeuronCount = obj.hiddenNeuronCount;
+            newObj = NetworkSize(obj.hiddenNeuronCount);
         end
     end
 end

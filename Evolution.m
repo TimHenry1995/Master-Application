@@ -13,7 +13,7 @@ classdef Evolution
             obj.population = population;
         end
         
-        function [eliminationCount] = eliminate(obj, fitnessScores, competitionSetSize)
+        function [eliminationCount, obj] = eliminate(obj, fitnessScores, competitionSetSize)
             %METHOD1 Summary of this method goes here
             %   Assumes that population size is an integer multiple of competitionSetSize
             %   Mutates the obj.population array such that some Individuals
@@ -21,46 +21,32 @@ classdef Evolution
 
             % Partition the population into arbitrary tuples of competitionSetSize and delete the least fit indivdual
             eliminationCount = 0;
-            for c = 1:(floor(numel(obj.population)/competitionSetSize)-1)
-              subset = fitnessScores(c*competitionSetSize: (c+1)*competitionSetSize-1);
+            for c = 0:(floor(numel(obj.population)/competitionSetSize)-1)
+              subset = fitnessScores(c*competitionSetSize+1: (c+1)*competitionSetSize);
               minIndices = find(subset == min(subset));
               obj.population{c*competitionSetSize + minIndices(1)} = [];
               eliminationCount = eliminationCount + 1;
             end
         end
         
-        function [offspringGenotype, offspringPhenoType] = mate(mother, father)
-            % Flip a coin to determine which allele is copied from the father and which one from the mother
-            offspringChromosomes = nan(1,numel(father.genotype.chromosomes));
-            for c = 1:numel(offspringChromosomes)
-              if rand(1) < 0.5
-                offspringChromosomes(c) = father.genotype.chromosomes(c).replicate();
-              else
-                offspringChromosomes(c) = mother.genotype.chromosomes(c).replicate();
-              end
-            end
-            offspringGenotype = Genotype(offspringChromosomes);
-            offspringPhenoType = Phenotype(offspringGenotype);
-        end
-        
         function overallFitness = generate(obj, fitnessScores, competitionSetSize)
             overallFitness = sum(fitnessScores);
             % Eliminate the least fit individuals
-            eliminationCount = obj.eliminate(fitnessScores, competitionSetSize);
+            [eliminationCount, obj] = obj.eliminate(fitnessScores, competitionSetSize);
 
             % Mate among the fittest to replenish the population.
             offspring = Individual.empty(0,eliminationCount);
-            o = 1; f = 1; m = 2; % count for offspring, fathers and mothers
+            o = 0; f = 1; m = 2; % count for offspring, fathers and mothers
             while o < eliminationCount
               % Advance counters
-              while numel(obj.population{f}) == 1 % Cell is non-empty
+              while numel(obj.population{f}) == 0 % Cell is non-empty
                   f = f + 1;
               end
-              while m == f || numel(obj.population{m}) == 1  % Cell is non-empty and not yet used by father
+              while m == f || numel(obj.population{m}) == 0  % Cell is non-empty and not yet used by father
                   m = m+1;
               end
               % Replenish population
-              offspring{o} = Evolution.mate(obj.population{m}, self.population{f});
+              offspring{o+1} = Evolution.mate(obj.population{m}, obj.population{f});
               o = o + 1;
             end
 
@@ -68,9 +54,9 @@ classdef Evolution
             o = 1;
             for i = 1:numel(obj.population)
               if numel(obj.population{i}) == 0 % An empty cell is found
-                  obj.population{i} = offspring(o);
+                  obj.population{i} = offspring{o};
+                  o = o+1;
               end
-              o = o+1;
             end
 
             % Introduce some mutations
@@ -79,6 +65,21 @@ classdef Evolution
     end
     
     methods(Static)
+        function [individual] = mate(mother, father)
+            % Flip a coin to determine which allele is copied from the father and which one from the mother
+            offspringChromosomes = Chromosome.empty(0,numel(father.genotype.chromosomes));
+            for c = 1:numel(father.genotype.chromosomes)
+              if rand(1) < 0.5
+                offspringChromosomes{c} = father.genotype.chromosomes{c}.replicate();
+              else
+                offspringChromosomes{c} = mother.genotype.chromosomes{c}.replicate();
+              end
+            end
+            offspringGenotype = Genotype(offspringChromosomes);
+            offspringPhenoType = Phenotype(offspringGenotype, father.phenotype.inputOutputNeuronCount);
+            individual = Individual(offspringGenotype, offspringPhenoType);
+        end
+        
         function [] = demonstrate()
             networkSizes = [NetworkSize(1), NetworkSize(2), NetworkSize(3)];
             initializers = [SynapseInitializer("uniform"), SynapseInitializer("normal")];

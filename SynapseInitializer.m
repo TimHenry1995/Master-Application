@@ -15,8 +15,7 @@ classdef SynapseInitializer < Chromosome
         end
         
         function newObj = replicate(obj)
-            newObj = replicate@Chromosome(obj);
-            newObj.kind = obj.kind;
+            newObj = SynapseInitializer(obj.kind);
         end
         
         function [A] = call(obj, scale, inputSize, outputSize)
