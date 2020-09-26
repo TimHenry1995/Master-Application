@@ -40,53 +40,61 @@ classdef Evolution
             offspringPhenoType = Phenotype(offspringGenotype);
         end
         
-        function generate(self, fitnessScores, competitionSetSize=4):
-    # Eliminate the least fit individuals
-    eliminationCount = self.eliminate(fitnessScores, competitionSetSize)
+        function overallFitness = generate(obj, fitnessScores, competitionSetSize)
+            overallFitness = sum(fitnessScores);
+            % Eliminate the least fit individuals
+            eliminationCount = obj.eliminate(fitnessScores, competitionSetSize)
 
-    # Mate among the fittest to replenish the population.
-    f = 0; m = 1
-    offspring = [None] * eliminationCount
-    c = 0
-    while c < eliminationCount:
-      # Advance counters
-      while self.population[f] == None: f+=1
-      while m == f or self.population[m] == None: m+=1
-      # Replenish population
-      offspring[c] = Evolution.mate(self.population[m], self.population[f])
-      c+= 1
+            % Mate among the fittest to replenish the population.
+            offspring = nan(1,eliminationCount);
+            o = 0; f = 0; m = 1; % count for offspring, fathers and mothers
+            while o < eliminationCount
+              % Advance counters
+              while isnan(obj.population(f))
+                  f = f + 1;
+              end
+              while m == f || isnan(self.population(m))
+                  m = m+1;
+              end
+              % Replenish population
+              offspring(c) = Evolution.mate(obj.population(m), self.population(f))
+              o = o + 1;
+            end
 
-    c = 0;
-    # Replace the previous generation by the current one
-    for i in range(len(self.population)):
-      if self.population[i] == None: self.population[i] = offspring[c]
-      c += 1
+            % Replace the previous generation by the current one
+            o = 0;
+            for i = 1:numel(obj.population)
+              if isnan(obj.population(i))
+                  obj.population(i) = offspring(o);
+              end
+              o = o+1;
+            end
 
-    # Introduce some mutations
+            % Introduce some mutations
 
-    # Return an aggragate of the overall fittness of the population 
-    return np.mean(fitnessScores)
+        end
+    end
+    
+    methods(Static)
+        function [] = demonstrate()
+            networkSizes = [NetworkSize(1), NetworkSize(2), NetworkSize(3)];
+            initializers = [Initializer("uniform"), Initializer("normal")];
+            weightActivationFunctions = [WeightActivationFunction("sigmoid", 3), WeightActivationFunction("sigmoid", 1), WeightActivationFunction("relu", 3), WeightActivationFunction("relu", 1)];
+            learningRateCalculators = [LearningRateCalculator(0.05, 0.9999), LearningRateCalculator(0.01, 0.999999)];
+            
+            % Set up the populaiton
+            populationSize = 8;
+            population = nan(1,populationSize);
+            for i = 1:populationSize
+                chromosomes = [randsample(networkSizes, 1), randsample(initializers, 1), randsample(weightActivationFunctions, 1), randsample(learningRateCalculators, 1)];
+                population(i).genotype = Genotype(chromosomes);
+                population(i).phenotype = Phenotype(genotype);
+            end
+
+            evolution = Evolution(population);
+            fitnessScores = [2,6,8,4];
+            overallFitness = evolution.generate(fitnessScores);
+            print("Average fitness of first generation: " + str(overallFitness));
+        end
     end
 end
-
-  def 
-
-def demonstrateEvolution(populationSize):
-  networkSizes = [NetworkSize(hiddenNeuronCount=1), NetworkSize(hiddenNeuronCount=2), NetworkSize(hiddenNeuronCount=3)]
-  initializers = [Initializer(kind="uniform"), Initializer(kind="normal")]
-  weightActivationFunctions = [WeightActivationFunction(kind="sigmoid", scale=3), WeightActivationFunction(kind="sigmoid", scale=1), WeightActivationFunction(kind="relu", scale=3), WeightActivationFunction(kind="relu", scale=1)]
-  learningRateCalculators = [LearningRateCalculator(alpha=0.05, decay=0.9999), LearningRateCalculator(alpha=0.01, decay=0.999999)]
-  
-  population = [None] * populationSize
-  for i in range(populationSize):
-    genotype = Genotype(chromosomes = [rnd.choice(networkSizes), rnd.choice(initializers), rnd.choice(weightActivationFunctions), rnd.choice(learningRateCalculators)])
-    phenotype = Phenotype(genotype)
-    population[i] = (genotype, phenotype)
-
-  evolution = Evolution(population)
-  print("Average fitness of first generation: " + str(evolution.generate(fitnessScores=[2,6,8,4])))
-
-  return population
-
-pop = demonstrateEvolution(4)
-
