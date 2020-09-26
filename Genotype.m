@@ -4,8 +4,8 @@ classdef Genotype
     
     properties
         networkSize;
-        parameterInitializer;
-        forwardFunction;
+        synapseInitializer;
+        activationFunction;
         learningRateCalculator;
         chromosomes;
     end
@@ -13,12 +13,15 @@ classdef Genotype
     methods
         function obj = Genotype(chromosomes)
             %GENOTYPE Construct an instance of this class
-            %   Detailed explanation goes here
-            obj.networkSize = chromosomes(1);
-            obj.parameterInitializer = chromosomes(2);
-            obj.forwardFunction = chromosomes(3);
-            obj.learningRateCalculator = chromosomes(4);
-            obj.chromosomes = {networkSize, parameterInitializer, forwardFunction, learningRateCalculator};
+            %   It is expected that chromosomes is an array of chromosome
+            %   subclasses networkSize, synapseInitializer,
+            %   activationFunction, learningRateCalculator, chromosomes in
+            %   this order.
+            obj.networkSize = chromosomes{1};
+            obj.synapseInitializer = chromosomes{2};
+            obj.activationFunction = chromosomes{3};
+            obj.learningRateCalculator = chromosomes{4};
+            obj.chromosomes = {obj.networkSize, obj.synapseInitializer, obj.activationFunction, obj.learningRateCalculator};
         end
     end
 end

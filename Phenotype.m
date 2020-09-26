@@ -11,8 +11,8 @@ classdef Phenotype
         function obj = Phenotype(genotype, inputOutputNeuronCount)
             %PHENOTYPE Construct an instance of this class
             %   Detailed explanation goes here
-            obj.theta1 = genotype.parameterInitializer.call(genotype.forwardFunction.scale, inputOutputNeuronCount, genotype.networkSize.hiddenNeuronCount);
-            obj.theta2 = genotype.parameterInitializer.call(genotype.forwardFunction.scale, genotype.networkSize.hiddenNeuronCount, inputOutputNeuronCount);
+            obj.theta1 = genotype.synapseInitializer.call(genotype.activationFunction.scale, inputOutputNeuronCount, genotype.networkSize.hiddenNeuronCount);
+            obj.theta2 = genotype.synapseInitializer.call(genotype.activationFunction.scale, genotype.networkSize.hiddenNeuronCount, inputOutputNeuronCount);
         end
     end
 end

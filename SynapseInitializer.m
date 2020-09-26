@@ -1,4 +1,4 @@
-classdef ParameterInitializer < Chromosome
+classdef SynapseInitializer < Chromosome
     %PARAMETERINITIALIZER Summary of this class goes here
     %   Detailed explanation goes here
    
@@ -7,7 +7,7 @@ classdef ParameterInitializer < Chromosome
     end
     
     methods
-        function obj = ParameterInitializer(kind)
+        function obj = SynapseInitializer(kind)
             %PARAMETERINITIALIZER Construct an instance of this class
             %   Detailed explanation goes here
             obj = obj@Chromosome();

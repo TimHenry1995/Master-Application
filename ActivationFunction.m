@@ -1,4 +1,4 @@
-classdef ForwardFunction < Chromosome
+classdef ActivationFunction < Chromosome
     %FORWARDFUNCTION Summary of this class goes here
     %   Detailed explanation goes here
     
@@ -8,7 +8,7 @@ classdef ForwardFunction < Chromosome
     end
     
     methods
-        function obj = ForwardFunction(kind, scale)
+        function obj = ActivationFunction(kind, scale)
             %FORWARDFUNCTION Construct an instance of this class
             %   Detailed explanation goes here
             obj = obj@Chromosome();
