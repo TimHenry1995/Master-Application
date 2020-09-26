@@ -99,7 +99,7 @@ classdef Evolution
             evolution = Evolution(population);
             fitnessScores = [2,6,8,4,6,4,7,2];
             overallFitness = evolution.generate(fitnessScores, 4);
-            sprintf("Average fitness of first generation: %d", overallFitness)
+            fprintf("Average fitness of first generation: %d", overallFitness);
         end
     end
 end
