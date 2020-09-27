@@ -14,6 +14,10 @@ classdef Individual
             obj.genotype = genotype;
             obj.phenotype = phenotype;
         end
+        
+        function [string] = toString(obj)
+            string = "Individual: " + obj.genotype.toString() + ", " + obj.phenotype.toString();
+        end
     end
 end
 

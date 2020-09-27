@@ -24,6 +24,11 @@ classdef LearningRateCalculator < Chromosome
             %   Detailed explanation goes here
             obj.alpha = obj.alpha * obj.decay;
         end
+        
+        
+        function [string] = toString(obj)
+            string = "LearningRateCalculator: alpha = " + obj.alpha + ", decay = " + obj.decay;
+        end
     end
 end
 

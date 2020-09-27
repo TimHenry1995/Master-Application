@@ -23,6 +23,13 @@ classdef Genotype
             obj.learningRateCalculator = chromosomes{4};
             obj.chromosomes = {obj.networkSize, obj.synapseInitializer, obj.activationFunction, obj.learningRateCalculator};
         end
+        
+        function [string] = toString(obj)
+            string = "Genotype:";
+            for s = 1:numel(obj.chromosomes)
+                string = string + " " + obj.chromosomes{s}.toString();
+            end
+        end
     end
 end
 

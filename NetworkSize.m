@@ -18,6 +18,10 @@ classdef NetworkSize < Chromosome
         function newObj = replicate(obj)
             newObj = NetworkSize(obj.hiddenNeuronCount);
         end
+        
+        function [string] = toString(obj)
+            string = "NetworkSize: hiddenNeuronCount = " + obj.hiddenNeuronCount;
+        end
     end
 end
 

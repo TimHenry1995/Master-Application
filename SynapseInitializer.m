@@ -25,6 +25,10 @@ classdef SynapseInitializer < Chromosome
               A = scale*rand(inputSize, outputSize) - scale/2;
             end
         end
+        
+        function [string] = toString(obj)
+            string = "SynapseInitializer: kind = " + obj.kind;
+        end
     end
 end
 

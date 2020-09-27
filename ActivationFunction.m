@@ -26,6 +26,10 @@ classdef ActivationFunction < Chromosome
                 f = @(x) 1/(1+e.^x);
             end
         end
+        
+        function [string] = toString(obj)
+            string = "Activation Function: kind = " + obj.kind + ", sclae = " + obj.scale;
+        end
     end
 end
 

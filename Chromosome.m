@@ -6,6 +6,10 @@ classdef Chromosome
         function obj = replicate(obj)
             obj = Chromosome();
         end
+        
+        function [string] = toString(obj)
+            string = "";
+        end
     end
     
 end

@@ -16,5 +16,9 @@ classdef Phenotype
             obj.theta1 = genotype.synapseInitializer.call(genotype.activationFunction.scale, inputOutputNeuronCount, genotype.networkSize.hiddenNeuronCount);
             obj.theta2 = genotype.synapseInitializer.call(genotype.activationFunction.scale, genotype.networkSize.hiddenNeuronCount, inputOutputNeuronCount);
         end
+        
+        function [string] = toString(obj)
+            string = "Phenotype: inputOutputNeuronCount = " + obj.inputOutputNeuronCount;
+        end
     end
 end
