@@ -10,7 +10,8 @@ plot(G,'NodeLabel',G.Nodes.Name); title('Target course graph');
 
 %Use vectorization obj(1) = Individual(); obj(2) = etc
 %%
-clc
-Evolution.demonstrate();
+clc; clear; close all;
+Evolution.testGenerate();
+%Evolution.demonstrate();
 
 

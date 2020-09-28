@@ -13,7 +13,7 @@ classdef Evolution
             obj.population = population;
         end
         
-        function [eliminationCount, obj] = eliminate(obj, fitnessScores, competitionSetSize)
+        function [obj, eliminationCount] = eliminate(obj, fitnessScores, competitionSetSize)
             %METHOD1 Summary of this method goes here
             %   Assumes that population size is an integer multiple of competitionSetSize
             %   Mutates the obj.population array such that some Individuals
@@ -29,10 +29,10 @@ classdef Evolution
             end
         end
         
-        function overallFitness = generate(obj, fitnessScores, competitionSetSize)
+        function [obj, overallFitness] = generate(obj, fitnessScores, competitionSetSize)
             overallFitness = sum(fitnessScores);
             % Eliminate the least fit individuals
-            [eliminationCount, obj] = obj.eliminate(fitnessScores, competitionSetSize);
+            [obj, eliminationCount] = obj.eliminate(fitnessScores, competitionSetSize);
 
             % Mate among the fittest to replenish the population.
             offspring = Individual.empty(0,eliminationCount);
@@ -80,14 +80,65 @@ classdef Evolution
             individual = Individual(offspringGenotype, offspringPhenoType);
         end
         
-        function [] = demonstrate()
+        function [] = testGenerate()
+            % Tests the generate method by checking whether it cultivates a
+            % population with where most individuals have a genotype
+            % encoding a unfiorm synapse initializer for neurons when 
+            % starting out with an even split between uniform and normal 
+            % initializers.
+            populationSizeSmall = 10; populationSizeMedium=100; populationSizeLarge=1000;
+            evolutionSmall = Evolution.createExampleEvolution(populationSizeSmall);
+            evolutionMedium = Evolution.createExampleEvolution(populationSizeMedium);
+            evolutionLarge = Evolution.createExampleEvolution(populationSizeLarge);
+            
+            generationCount = 10;
+            favourCountsSmall = zeros(1,generationCount);
+            favourCountsMedium = zeros(1,generationCount);
+            favourCountsLarge = zeros(1,generationCount);
+            
+            for g = 1:generationCount
+                fitnessSmall = Evolution.getTestFitness(evolutionSmall.population);
+                favourCountsSmall(g) = sum(fitnessSmall);
+                [evolutionSmall, ~] = evolutionSmall.generate(fitnessSmall, 4);
+                
+                fitnessMedium = Evolution.getTestFitness(evolutionMedium.population);
+                favourCountsMedium(g) = sum(fitnessMedium);
+                [evolutionMedium, ~] = evolutionMedium.generate(fitnessMedium, 4);
+                
+                fitnessLarge = Evolution.getTestFitness(evolutionLarge.population);
+                favourCountsLarge(g) = sum(fitnessLarge);
+                [evolutionLarge, ~] = evolutionLarge.generate(fitnessLarge, 4);
+            end
+            
+            figure; hold on; plot(favourCountsSmall/populationSizeSmall); plot(favourCountsMedium/populationSizeMedium); plot(favourCountsLarge/populationSizeLarge); 
+            title('Demonstration of Natural Selection'); xlabel('Generation'); ylabel('Count of favoured individuals');
+            legend(join([num2str(populationSizeSmall),' Individuals']),...
+                join([num2str(populationSizeMedium),' Individuals']),...
+                join([num2str(populationSizeLarge),' Individuals']));
+        end
+        
+        function [fitness] = getTestFitness(population)
+            fitness = zeros(1,numel(population));
+            for i = 1:numel(population)
+                if population{i}.genotype.synapseInitializer.kind == "uniform"
+                    fitness(i) = fitness(i) + 1;
+                end
+                if population{i}.genotype.learningRateCalculator.alpha == 0.05
+                    fitness(i) = fitness(i) + 1;
+                end
+                if population{i}.genotype.activationFunction.kind == "relu"
+                    fitness(i) = fitness(i) + 1;
+                end
+            end
+        end
+        
+        function [evolution] = createExampleEvolution(populationSize)
             networkSizes = [NetworkSize(1), NetworkSize(2), NetworkSize(3)];
             initializers = [SynapseInitializer("uniform"), SynapseInitializer("normal")];
             activationFunctions = [ActivationFunction("sigmoid", 3), ActivationFunction("sigmoid", 1), ActivationFunction("relu", 3), ActivationFunction("relu", 1)];
             learningRateCalculators = [LearningRateCalculator(0.05, 0.9999), LearningRateCalculator(0.01, 0.999999)];
-            
+
             % Set up the populaiton
-            populationSize = 8;
             population = cell.empty(0,populationSize);
             inputOutputNeuronCount = 10;
             for i = 1:populationSize
@@ -95,10 +146,13 @@ classdef Evolution
                 genotype = Genotype(chromosomes);
                 population{i} = Individual(genotype, Phenotype(genotype, inputOutputNeuronCount));
             end
-
             evolution = Evolution(population);
+        end
+        
+        function [] = demonstrate()
+            evolution = Evolution.createExampleEvolution(8);
             fitnessScores = [2,6,8,4,6,4,7,2];
-            overallFitness = evolution.generate(fitnessScores, 4);
+            [~, overallFitness] = evolution.generate(fitnessScores, 4);
             fprintf("Average fitness of first generation: %d", overallFitness);
         end
     end
