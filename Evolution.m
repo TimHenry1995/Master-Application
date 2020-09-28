@@ -86,48 +86,47 @@ classdef Evolution
             % encoding a unfiorm synapse initializer for neurons when 
             % starting out with an even split between uniform and normal 
             % initializers.
-            populationSizeSmall = 10; populationSizeMedium=100; populationSizeLarge=1000;
-            evolutionSmall = Evolution.createExampleEvolution(populationSizeSmall);
-            evolutionMedium = Evolution.createExampleEvolution(populationSizeMedium);
-            evolutionLarge = Evolution.createExampleEvolution(populationSizeLarge);
-            
-            generationCount = 10;
-            favourCountsSmall = zeros(1,generationCount);
-            favourCountsMedium = zeros(1,generationCount);
-            favourCountsLarge = zeros(1,generationCount);
-            
-            for g = 1:generationCount
-                fitnessSmall = Evolution.getTestFitness(evolutionSmall.population);
-                favourCountsSmall(g) = sum(fitnessSmall);
-                [evolutionSmall, ~] = evolutionSmall.generate(fitnessSmall, 4);
-                
-                fitnessMedium = Evolution.getTestFitness(evolutionMedium.population);
-                favourCountsMedium(g) = sum(fitnessMedium);
-                [evolutionMedium, ~] = evolutionMedium.generate(fitnessMedium, 4);
-                
-                fitnessLarge = Evolution.getTestFitness(evolutionLarge.population);
-                favourCountsLarge(g) = sum(fitnessLarge);
-                [evolutionLarge, ~] = evolutionLarge.generate(fitnessLarge, 4);
+            populationSize=100;
+            iterationCount = 50; generationCount = 10;
+            overallFitness = zeros(iterationCount,generationCount);
+            for i = 1:iterationCount
+                evolution = Evolution.createExampleEvolution(populationSize);
+                for g = 1:generationCount
+                    fitness = Evolution.getTestFitness(evolution.population);
+                    overallFitness(i,g) = sum(fitness)/ populationSize;
+                    [evolution, ~] = evolution.generate(fitness, 4);
+                end
             end
             
-            figure; hold on; plot(favourCountsSmall/populationSizeSmall); plot(favourCountsMedium/populationSizeMedium); plot(favourCountsLarge/populationSizeLarge); 
-            title('Demonstration of Natural Selection'); xlabel('Generation'); ylabel('Count of favoured individuals');
-            legend(join([num2str(populationSizeSmall),' Individuals']),...
-                join([num2str(populationSizeMedium),' Individuals']),...
-                join([num2str(populationSizeLarge),' Individuals']));
+            % Plot confidence interval
+            average = mean(overallFitness,1);
+            error = std(overallFitness,1);
+
+            % prepare it for the fill function
+            x_ax    = 1:generationCount;
+            X_plot  = [x_ax, fliplr(x_ax)];
+            Y_plot  = [average-1.96.*error, fliplr(average+1.96.*error)];
+
+            % plot a line + confidence bands
+            hold on 
+            plot(x_ax, average, 'blue', 'LineWidth', 1.2)
+            fill(X_plot, Y_plot , 1, 'facecolor','blue', 'edgecolor','none', 'facealpha', 0.3);
+            hold off 
+            
+            title('Demonstration of Natural Selection'); xlabel('Generation'); ylabel('Fitness');
         end
         
         function [fitness] = getTestFitness(population)
             fitness = zeros(1,numel(population));
             for i = 1:numel(population)
                 if population{i}.genotype.synapseInitializer.kind == "uniform"
-                    fitness(i) = fitness(i) + 1;
+                    fitness(i) = fitness(i) + 1/3;
                 end
                 if population{i}.genotype.learningRateCalculator.alpha == 0.05
-                    fitness(i) = fitness(i) + 1;
+                    fitness(i) = fitness(i) + 1/3;
                 end
                 if population{i}.genotype.activationFunction.kind == "relu"
-                    fitness(i) = fitness(i) + 1;
+                    fitness(i) = fitness(i) + 1/3;
                 end
             end
         end
