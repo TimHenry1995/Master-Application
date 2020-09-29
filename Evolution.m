@@ -58,6 +58,11 @@ classdef Evolution
                   o = o+1;
               end
             end
+            
+            % Change the order of individuals
+            i = randi([1,numel(obj.population)]);
+            obj.population = {obj.population{i+1: numel(obj.population)}, obj.population{1:i}};
+            i = randi([1,numel(obj.population)]);
 
             % Introduce some mutations
 
