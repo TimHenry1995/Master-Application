@@ -1,12 +1,18 @@
 % Specify courses and their relations as a graph
-COURSES = {'Graph Theory', 'Discrete Mathematics', 'Theoretical Computerscience', 'Perception', 'Learning and Memory', 'Action'};
+close all;
+COURSES = {'Action', 'Functional Neuroanatomy', 'Body and Behaviour', 'Learning and Memory', 'Perception',...
+    'Systems Biology', 'Introdutction to Bio-Informatics', 'Evolution and Genetics',...
+    'Methods of Cognitive Neuroscience','Methods and Techniques', ...
+    'Statistics 1,2 & 3', 'Probability', 'Mathematical Simulation',...
+    'Mathematical Modelling', 'Calculus', 'Optimization', 'Machine Learning', 'Natural Language Processing','Numerical Mathematics','Linear Algebra'};
 NodeTable = table(COURSES','VariableNames',{'Name'});
-s = [1 1 1 2 3];
-t = [2 5 6 3 4];
+s = [1 1 1 1 2 2 2 3 3 3 4, 5 4, 6 6 7, 9,  10, 11 11 11 11, 14 14 14 14 14 14 15 15 15 15 15 16 16 16 16 17 17 17 18 18 19];
+t = [2 3 4 5 3 4 5 4 5 7 5, 8 17, 7 8 8, 10, 11, 12 13 17 18, 15 16 17 18 19 20 16 17 18 19 20 17 18 19 20 18 19 20 19 20 20];
 EdgeTable = table([s' t'], 'VariableNames',{'EndNodes'});
 G = graph(EdgeTable,NodeTable);
 figure(); 
-plot(G,'NodeLabel',G.Nodes.Name); title('Target course graph');
+p=plot(G,'NodeLabel',G.Nodes.Name, 'Layout','subspace'); title('Target course graph');
+layout(p,'force','WeightEffect','direct')
 
 %Use vectorization obj(1) = Individual(); obj(2) = etc
 %%
