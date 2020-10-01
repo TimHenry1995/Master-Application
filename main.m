@@ -11,9 +11,8 @@ t = [2 3 4 5 3 4 5 4 5 7 5, 8 17, 7 8 8, 10, 11, 12 13 17 18, 15 16 17 18 19 20 
 EdgeTable = table([s' t'], 'VariableNames',{'EndNodes'});
 G = graph(EdgeTable,NodeTable);
 figure(); 
-p=plot(G,'NodeLabel',G.Nodes.Name, 'Layout','subspace'); title('Target course graph');
-layout(p,'force','WeightEffect','direct')
-
+h=plot(G,'NodeLabel',G.Nodes.Name); title('Target course graph');
+set(gcf,'WindowButtonDownFcn',@(f,~)edit_graph(f,h))
 %Use vectorization obj(1) = Individual(); obj(2) = etc
 %%
 clc; clear; close all;
