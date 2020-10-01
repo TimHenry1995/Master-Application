@@ -9,32 +9,39 @@ NodeTable = table(COURSES','VariableNames',{'Name'});
 s = [1 1 1 1 2 2 2 3 3 3 4, 5 4, 6 6 7, 9,  10, 11 11 11 11, 14 14 14 14 14 14 15 15 15 15 15 16 16 16 16 17 17 17 18 18 19];
 t = [2 3 4 5 3 4 5 4 5 7 5, 8 17, 7 8 8, 10, 11, 12 13 17 18, 15 16 17 18 19 20 16 17 18 19 20 17 18 19 20 18 19 20 19 20 20];
 EdgeTable = table([s' t'], 'VariableNames',{'EndNodes'});
-G = graph(EdgeTable,NodeTable);
-figure(); 
-h=plot(G,'NodeLabel',G.Nodes.Name); title('Target course graph');
-set(gcf,'WindowButtonDownFcn',@(f,~)edit_graph(f,h))
+%G = graph(EdgeTable,NodeTable);
+%figure(); 
+% h=plot(G,'NodeLabel',G.Nodes.Name); title('Target course graph');
+% set(gcf,'WindowButtonDownFcn',@(f,~)edit_graph(f,h))
 %Use vectorization obj(1) = Individual(); obj(2) = etc
-%%
-clc; clear; close all;
-Evolution.testGenerate();
+%Evolution.testGenerate();
 %Evolution.demonstrate();
-%%
+
 clc;
-courseCount = 10;
-X = rand([courseCount-3,courseCount]);
-Y = X;
-[loss, ~] = train(X,Y);
-plot(loss);
+X = eye(numel(COURSES)); 
+X = [X;X;X;X;X;X;X;X;X;X;X;X;X;X;X;X];
+Y = getEdgeMatrix(s,t,numel(COURSES));
+Y = [Y;Y;Y;Y;Y;Y;Y;Y;Y;Y;Y;Y;Y;Y;Y;Y;];
+[loss, a3] = train(X,Y);
+figure(); plot(loss);
+figure(); subplot(2,1,1); heatmap(Y(1:numel(COURSES),:)); subplot(2,1,2); heatmap(a3(1:numel(COURSES),:));
+function [E] = getEdgeMatrix(s,t,unitCount)
+    E = zeros(unitCount);
+    for i = 1:numel(s)
+        E(s(i),t(i)) = 1; 
+        E(t(i),s(i)) = 1; 
+    end
+end
+
 function [loss, a3] = train(X,Y)
     % Assumes channels last. rows are instances
     
     % Choosing hyper paramters
     alpha = 0.07;
-    lambdaValue = 3;
     inputLayerSize = size(X,2);
     hiddenLayerSize = 25;
     outputLayerSize = size(Y,2);
-    epochCount = 30;
+    epochCount = 200000;
     activate = @(x) 1./(1+exp(1).^(-x));
     loss = nan(1,epochCount);
     % Training
@@ -68,8 +75,8 @@ function [loss, a3] = train(X,Y)
         delC_delTheta1 = tmp(2:end,:)*(delZ2_delTheta1); % [hidden_layer_size, output_layer_size + 1]
 
         % Update the thetas in direction from input to output
-        Theta1 = Theta1 - alpha * (1/size(X,1)) * (delC_delTheta1' + lambdaValue .* Theta1);
-        Theta2 = Theta2 - alpha * (1/size(X,1)) * (delC_delTheta2' + lambdaValue .* Theta2);
+        Theta1 = Theta1 - alpha * (1/size(X,1)) * (delC_delTheta1' + Theta1);
+        Theta2 = Theta2 - alpha * (1/size(X,1)) * (delC_delTheta2' + Theta2);
     end
 end
   
