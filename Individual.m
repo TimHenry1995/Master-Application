@@ -15,12 +15,12 @@ classdef Individual
             obj.phenotype = phenotype;
         end
         
-        function [loss, a3] = train(obj, X,Y, epochCount)
+        function [obj, lossTrajectory, a3] = train(obj, X,Y, epochCount)
             % Assumes channels last. rows are instances
             
             [activate, revert] = obj.genotype.activationFunction.call();
-            loss = nan(1,epochCount);
-
+            lossTrajectory = nan(1,epochCount);
+            
             % Training
             for e = 1:epochCount
                 % Forward activation
@@ -31,7 +31,7 @@ classdef Individual
                 % Backward propagation 
                 % hidden to output layer
                 delC_delA3 = (a3-Y);
-                loss(e) = mean(mean(delC_delA3.^2));
+                lossTrajectory(e) = mean(mean(delC_delA3.^2));
                 delA3_delZ3 = revert(a3);
                 delZ3_delA2 = obj.phenotype.theta2';
                 delZ3_delTheta2 = a2;
@@ -46,9 +46,9 @@ classdef Individual
                 delC_delTheta1 = tmp(:,:)*(delZ2_delTheta1); % [hidden_layer_size, output_layer_size + 1]
 
                 % Update the thetas in direction from input to output
-                obj.genotype.learningRateCalculator = obj.genotype.learningRateCalculator.call() ;
                 obj.phenotype.theta1 = obj.phenotype.theta1 - obj.genotype.learningRateCalculator.alpha * (1/size(X,1)) * (delC_delTheta1' + obj.phenotype.theta1);
                 obj.phenotype.theta2 = obj.phenotype.theta2 - obj.genotype.learningRateCalculator.alpha * (1/size(X,1)) * (delC_delTheta2' + obj.phenotype.theta2);
+                obj.genotype.learningRateCalculator = obj.genotype.learningRateCalculator.call();
             end
         end
         

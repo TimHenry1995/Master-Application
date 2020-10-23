@@ -67,6 +67,23 @@ classdef Evolution
             % Introduce some mutations
 
         end
+        
+        function [obj, fitnessTrajectoryMeanStandardError] = evolve(obj, generationCount, X, Y, epochCount)
+            fitnessScores = nan(numel(obj.population),1); % For each individual in the population the fitness will be obtained
+            fitnessTrajectoryMeanStandardError = nan(generationCount, 2);
+            
+            for g = 1:generationCount
+                for i = 1:numel(obj.population)
+                    % Train the current individual to obtain its fitness
+                    [obj.population(i), lossTrajectory, ~] = obj.population(i).train(X, Y, epochCount);
+                    fitnessScores(i) = mean(lossTrajectory);
+                end
+                % Replace current generation by new one
+                fitnessTrajectoryMeanStandardError(i,1) = mean(fitnessScores);
+                fitnessTrajectoryMeanStandardError(i,2) = std(fitnessScores);
+                [obj, ~] = generate(obj, fitnessScores, 4);
+            end
+        end
     end
     
     methods(Static)
@@ -137,7 +154,7 @@ classdef Evolution
         end
         
         function [evolution] = createExampleEvolution(populationSize)
-            networkSizes = [NetworkSize(1), NetworkSize(2), NetworkSize(3)];
+            networkSizes = [NetworkSize(10), NetworkSize(20), NetworkSize(30)];
             initializers = [SynapseInitializer("uniform"), SynapseInitializer("normal")];
             activationFunctions = [ActivationFunction("sigmoid", 3), ActivationFunction("sigmoid", 1), ActivationFunction("relu", 3), ActivationFunction("relu", 1)];
             learningRateCalculators = [LearningRateCalculator(0.05, 0.9999), LearningRateCalculator(0.01, 0.999999)];
