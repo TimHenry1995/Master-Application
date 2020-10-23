@@ -4,7 +4,6 @@ classdef ActivationFunction < Chromosome
     
     properties
         kind;
-        scale;
     end
     
     methods

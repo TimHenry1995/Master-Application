@@ -92,8 +92,14 @@ classdef Evolution
                 % Replace current generation by new one
                 fitnessTrajectoryMeanStandardError(g,1) = mean(fitnessScores);
                 fitnessTrajectoryMeanStandardError(g,2) = std(fitnessScores);
-                [obj, ~] = generate(obj, fitnessScores, 4);
+                if g < generationCount
+                    [obj, ~] = generate(obj, fitnessScores, 4);
+                end
             end
+            average = fitnessTrajectoryMeanStandardError(:,1)';
+            error = fitnessTrajectoryMeanStandardError(:,2)'; 
+            plotConfidenceInterval(average, error)
+            title('Demonstration of Natural Selection'); xlabel('Generation'); ylabel('Fitness');
         end
     end
     
@@ -123,7 +129,7 @@ classdef Evolution
             iterationCount = 50; generationCount = 10;
             overallFitness = zeros(iterationCount,generationCount);
             for i = 1:iterationCount
-                evolution = Evolution.createExampleEvolution(populationSize);
+                evolution = Evolution.createExampleEvolution(populationSize, 30);
                 for g = 1:generationCount
                     fitness = Evolution.getTestFitness(evolution.population);
                     overallFitness(i,g) = sum(fitness)/ populationSize;
@@ -133,19 +139,8 @@ classdef Evolution
             
             % Plot confidence interval
             average = mean(overallFitness,1);
-            error = std(overallFitness,1);
-
-            % prepare it for the fill function
-            x_ax    = 1:generationCount;
-            X_plot  = [x_ax, fliplr(x_ax)];
-            Y_plot  = [average-1.96.*error, fliplr(average+1.96.*error)];
-
-            % plot a line + confidence bands
-            hold on 
-            plot(x_ax, average, 'blue', 'LineWidth', 1.2)
-            fill(X_plot, Y_plot , 1, 'facecolor','blue', 'edgecolor','none', 'facealpha', 0.3);
-            hold off 
-            
+            error = std(overallFitness,1); 
+            plotConfidenceInterval(average, error)
             title('Demonstration of Natural Selection'); xlabel('Generation'); ylabel('Fitness');
         end
         
@@ -165,9 +160,9 @@ classdef Evolution
         end
         
         function [evolution] = createExampleEvolution(populationSize, inputOutputNeuronCount)
-            networkSizes = [NetworkSize(10), NetworkSize(20), NetworkSize(30)];
-            initializers = [SynapseInitializer("uniform", 0.33), SynapseInitializer("normal", 0.33), SynapseInitializer("uniform", 1), SynapseInitializer("normal", 1), SynapseInitializer("uniform", 3), SynapseInitializer("normal", 3)];
-            activationFunctions = [ActivationFunction("relu"), ActivationFunction("sigmoid")];%, ActivationFunction("relu", 3), ActivationFunction("relu", 1)];
+            networkSizes = [NetworkSize(10), NetworkSize(20), NetworkSize(30), NetworkSize(50), NetworkSize(60)];
+            initializers = [SynapseInitializer("uniform", 0.11), SynapseInitializer("normal", 0.11), SynapseInitializer("uniform", 0.33), SynapseInitializer("normal", 0.33), SynapseInitializer("uniform", 1), SynapseInitializer("normal", 1), SynapseInitializer("uniform", 3), SynapseInitializer("normal", 3)];
+            activationFunctions = [ActivationFunction("sigmoid"), ActivationFunction("sigmoid")];%, ActivationFunction("relu", 3), ActivationFunction("relu", 1)];
             learningRateCalculators = [LearningRateCalculator(0.05, 0.9999), LearningRateCalculator(0.01, 0.99999)];
 
             % Set up the populaiton

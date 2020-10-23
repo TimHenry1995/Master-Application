@@ -29,7 +29,7 @@ EdgeTable = table([s' t'], 'VariableNames',{'EndNodes'});
 % phenotype = Phenotype(genotype, inputOutputNeuronCount);
 % individual = Individual(genotype, phenotype);
 
-evolution = Evolution.createExampleEvolution(4, numel(COURSES));
+evolution = Evolution.createExampleEvolution(32, numel(COURSES));
 
 % Training
 X = eye(numel(COURSES)); 
@@ -41,7 +41,6 @@ tic;
 % [loss, a3] = individual.train(X, Y, 1e4);
 % figure(); plot(loss);
 % figure(); subplot(2,1,1); heatmap(Y(1:numel(COURSES),:)); subplot(2,1,2); heatmap(a3(1:numel(COURSES),:));
-figure(); plot(fitnessTrajectoryMeanStandardError(:,1));
 toc;
 function [E] = getEdgeMatrix(s,t,unitCount)
     E = zeros(unitCount);
