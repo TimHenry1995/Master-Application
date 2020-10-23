@@ -37,7 +37,7 @@ X = [X;X;X;X;X;X;X;X;X;X;X;X;X;X];
 Y = getEdgeMatrix(s,t,numel(COURSES));
 Y = [Y;Y;Y;Y;Y;Y;Y;Y;Y;Y;Y;Y;Y;Y];
 tic;
-[evolution, fitnessTrajectoryMeanStandardError] = evolution.evolve(10, X, Y, 1e2);
+[evolution, fitnessTrajectoryMeanStandardError] = evolution.evolve(3, X, Y, 1e2);
 % [loss, a3] = individual.train(X, Y, 1e4);
 % figure(); plot(loss);
 % figure(); subplot(2,1,1); heatmap(Y(1:numel(COURSES),:)); subplot(2,1,2); heatmap(a3(1:numel(COURSES),:));

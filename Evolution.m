@@ -59,12 +59,12 @@ classdef Evolution
                   o = o+1;
               else % Asexual reproduction
                   parent = obj.population{i};
-                  offspringChromosomes = Chromosome.empty(0,numel(father.genotype.chromosomes));
+                  offspringChromosomes = Chromosome.empty(0,numel(parent.genotype.chromosomes));
                   for c = 1:numel(parent.genotype.chromosomes)
-                      offspringChromosomes{c} = mother.genotype.chromosomes{c}.replicate();
+                      offspringChromosomes{c} = parent.genotype.chromosomes{c}.replicate();
                   end
                   offspringGenotype = Genotype(offspringChromosomes);
-                  offspringPhenoType = Phenotype(offspringGenotype, father.phenotype.inputOutputNeuronCount);
+                  offspringPhenoType = Phenotype(offspringGenotype, parent.phenotype.inputOutputNeuronCount);
                   obj.population{i} = Individual(offspringGenotype, offspringPhenoType); 
               end
             end
@@ -86,7 +86,7 @@ classdef Evolution
                 for i = 1:numel(obj.population)
                     % Train the current individual to obtain its fitness
                     [obj.population{i}, lossTrajectory, ~] = obj.population{i}.train(X, Y, epochCount);
-                    %figure(); plot(lossTrajectory)
+                    figure(); plot(lossTrajectory)
                     fitnessScores(i) = -mean(lossTrajectory);
                 end
                 % Replace current generation by new one
