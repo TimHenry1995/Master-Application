@@ -16,7 +16,17 @@ classdef NetworkSize < Chromosome
         end
         
         function newObj = replicate(obj)
-            newObj = NetworkSize(obj.hiddenNeuronCount);
+            delta = 0;
+            if rand(1) > 0.7
+                if rand(1) > 0.5
+                    delta = 2;
+                else
+                    if obj.hiddenNeuronCount > 2
+                        delta = -2;
+                    end
+                end
+            end
+            newObj = NetworkSize(obj.hiddenNeuronCount + delta);
         end
         
         function [string] = toString(obj)

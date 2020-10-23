@@ -17,7 +17,17 @@ classdef SynapseInitializer < Chromosome
         end
         
         function newObj = replicate(obj)
-            newObj = SynapseInitializer(obj.kind, obj.scale);
+            delta = 0;
+            if rand(1) > 0.7
+                if rand(1) > 0.5
+                    delta = 0.01;
+                else
+                    if obj.scale > 0.01
+                        delta = -0.01;
+                    end
+                end
+            end
+            newObj = SynapseInitializer(obj.kind, obj.scale + delta);
         end
         
         function [A] = call(obj, inputSize, outputSize)

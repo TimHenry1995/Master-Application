@@ -73,9 +73,6 @@ classdef Evolution
             i = randi([1,numel(obj.population)]);
             obj.population = {obj.population{i+1: numel(obj.population)}, obj.population{1:i}};
             i = randi([1,numel(obj.population)]);
-
-            % Introduce some mutations
-
         end
         
         function [obj, fitnessTrajectoryMeanStandardError] = evolve(obj, generationCount, X, Y, epochCount)
@@ -86,7 +83,7 @@ classdef Evolution
                 for i = 1:numel(obj.population)
                     % Train the current individual to obtain its fitness
                     [obj.population{i}, lossTrajectory, ~] = obj.population{i}.train(X, Y, epochCount);
-                    figure(); plot(lossTrajectory)
+                    %figure(); plot(lossTrajectory)
                     fitnessScores(i) = -mean(lossTrajectory);
                 end
                 % Replace current generation by new one
@@ -162,8 +159,8 @@ classdef Evolution
         function [evolution] = createExampleEvolution(populationSize, inputOutputNeuronCount)
             networkSizes = [NetworkSize(10), NetworkSize(20), NetworkSize(30), NetworkSize(50), NetworkSize(60)];
             initializers = [SynapseInitializer("uniform", 0.11), SynapseInitializer("normal", 0.11), SynapseInitializer("uniform", 0.33), SynapseInitializer("normal", 0.33), SynapseInitializer("uniform", 1), SynapseInitializer("normal", 1), SynapseInitializer("uniform", 3), SynapseInitializer("normal", 3)];
-            activationFunctions = [ActivationFunction("sigmoid"), ActivationFunction("sigmoid")];%, ActivationFunction("relu", 3), ActivationFunction("relu", 1)];
-            learningRateCalculators = [LearningRateCalculator(0.05, 0.9999), LearningRateCalculator(0.01, 0.99999)];
+            activationFunctions = [ActivationFunction("sigmoid")];%, ActivationFunction("relu", 3), ActivationFunction("relu", 1)];
+            learningRateCalculators = [LearningRateCalculator(0.1, 0.999), LearningRateCalculator(0.05, 0.9999), LearningRateCalculator(0.01, 0.99999)];
 
             % Set up the populaiton
             population = cell.empty(0,populationSize);
