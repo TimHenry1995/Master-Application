@@ -75,12 +75,12 @@ classdef Evolution
             for g = 1:generationCount
                 for i = 1:numel(obj.population)
                     % Train the current individual to obtain its fitness
-                    [obj.population(i), lossTrajectory, ~] = obj.population(i).train(X, Y, epochCount);
-                    fitnessScores(i) = mean(lossTrajectory);
+                    [obj.population{i}, lossTrajectory, ~] = obj.population{i}.train(X, Y, epochCount);
+                    fitnessScores(i) = -mean(lossTrajectory);
                 end
                 % Replace current generation by new one
-                fitnessTrajectoryMeanStandardError(i,1) = mean(fitnessScores);
-                fitnessTrajectoryMeanStandardError(i,2) = std(fitnessScores);
+                fitnessTrajectoryMeanStandardError(g,1) = mean(fitnessScores);
+                fitnessTrajectoryMeanStandardError(g,2) = std(fitnessScores);
                 [obj, ~] = generate(obj, fitnessScores, 4);
             end
         end
@@ -153,7 +153,7 @@ classdef Evolution
             end
         end
         
-        function [evolution] = createExampleEvolution(populationSize)
+        function [evolution] = createExampleEvolution(populationSize, inputOutputNeuronCount)
             networkSizes = [NetworkSize(10), NetworkSize(20), NetworkSize(30)];
             initializers = [SynapseInitializer("uniform"), SynapseInitializer("normal")];
             activationFunctions = [ActivationFunction("sigmoid", 3), ActivationFunction("sigmoid", 1), ActivationFunction("relu", 3), ActivationFunction("relu", 1)];
@@ -161,7 +161,6 @@ classdef Evolution
 
             % Set up the populaiton
             population = cell.empty(0,populationSize);
-            inputOutputNeuronCount = 10;
             for i = 1:populationSize
                 chromosomes = {randsample(networkSizes, 1), randsample(initializers, 1), randsample(activationFunctions, 1), randsample(learningRateCalculators, 1)};
                 genotype = Genotype(chromosomes);
