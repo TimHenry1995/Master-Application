@@ -53,9 +53,19 @@ classdef Evolution
             % Replace the previous generation by the current one
             o = 1;
             for i = 1:numel(obj.population)
+              % Sexual reproduction using the pool of previously generated offsprings
               if numel(obj.population{i}) == 0 % An empty cell is found
                   obj.population{i} = offspring{o};
                   o = o+1;
+              else % Asexual reproduction
+                  parent = obj.population{i};
+                  offspringChromosomes = Chromosome.empty(0,numel(father.genotype.chromosomes));
+                  for c = 1:numel(parent.genotype.chromosomes)
+                      offspringChromosomes{c} = mother.genotype.chromosomes{c}.replicate();
+                  end
+                  offspringGenotype = Genotype(offspringChromosomes);
+                  offspringPhenoType = Phenotype(offspringGenotype, father.phenotype.inputOutputNeuronCount);
+                  obj.population{i} = Individual(offspringGenotype, offspringPhenoType); 
               end
             end
             
@@ -76,6 +86,7 @@ classdef Evolution
                 for i = 1:numel(obj.population)
                     % Train the current individual to obtain its fitness
                     [obj.population{i}, lossTrajectory, ~] = obj.population{i}.train(X, Y, epochCount);
+                    %figure(); plot(lossTrajectory)
                     fitnessScores(i) = -mean(lossTrajectory);
                 end
                 % Replace current generation by new one
@@ -156,8 +167,8 @@ classdef Evolution
         function [evolution] = createExampleEvolution(populationSize, inputOutputNeuronCount)
             networkSizes = [NetworkSize(10), NetworkSize(20), NetworkSize(30)];
             initializers = [SynapseInitializer("uniform"), SynapseInitializer("normal")];
-            activationFunctions = [ActivationFunction("sigmoid", 3), ActivationFunction("sigmoid", 1), ActivationFunction("relu", 3), ActivationFunction("relu", 1)];
-            learningRateCalculators = [LearningRateCalculator(0.05, 0.9999), LearningRateCalculator(0.01, 0.999999)];
+            activationFunctions = [ActivationFunction("sigmoid", 3), ActivationFunction("sigmoid", 1)];%, ActivationFunction("relu", 3), ActivationFunction("relu", 1)];
+            learningRateCalculators = [LearningRateCalculator(0.05, 0.9999), LearningRateCalculator(0.01, 0.99999)];
 
             % Set up the populaiton
             population = cell.empty(0,populationSize);
