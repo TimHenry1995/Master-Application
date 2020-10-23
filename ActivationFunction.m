@@ -20,12 +20,13 @@ classdef ActivationFunction < Chromosome
         end
         
         function [activate, revert] = call(obj)
+            % revert expects the activated x
             if obj.kind == "relu"
                 activate = @(x) max(0, obj.scale*x);
-                revert = @(x) 1;
+                revert = @(x) x./(x+1e-5); % Evaluates to appr. 0 for x = 0 and appr. 1 for x > 0
             elseif obj.kind == "sigmoid"
-                activate = @(x) 1/(1+e.^x);
-                revert = @(x) x.*(1-x);
+                activate = @(x) 1./(1+exp(1).^(-x));
+                revert = @(x) x.*(1-x); 
             end
         end
         

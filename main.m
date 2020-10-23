@@ -1,5 +1,5 @@
 % Specify courses and their relations as a graph
-close all;
+close all; clc; clear all;
 COURSES = {'Action', 'Functional Neuroanatomy', 'Body and Behaviour', 'Learning and Memory', 'Perception',...
     'Systems Biology', 'Introdutction to Bio-Informatics', 'Evolution and Genetics',...
     'Methods of Cognitive Neuroscience','Methods and Techniques', ...
@@ -17,14 +17,27 @@ EdgeTable = table([s' t'], 'VariableNames',{'EndNodes'});
 %Evolution.testGenerate();
 %Evolution.demonstrate();
 
-clc;
+networkSize = NetworkSize(25);
+initializer = SynapseInitializer("uniform");
+activationFunction = ActivationFunction("sigmoid", 1);
+learningRateCalculator = LearningRateCalculator(0.07, 1);
+
+% Set up the populaiton
+inputOutputNeuronCount = numel(COURSES);
+chromosomes = {networkSize, initializer, activationFunction, learningRateCalculator};
+genotype = Genotype(chromosomes);
+phenotype = Phenotype(genotype, inputOutputNeuronCount);
+individual = Individual(genotype, phenotype);
+
+% Training
 X = eye(numel(COURSES)); 
 X = [X;X;X;X;X;X;X;X;X;X;X;X;X;X;X;X];
 Y = getEdgeMatrix(s,t,numel(COURSES));
 Y = [Y;Y;Y;Y;Y;Y;Y;Y;Y;Y;Y;Y;Y;Y;Y;Y;];
-[loss, a3] = train(X,Y);
+[loss, a3] = individual.train(X, Y, 5e4);
 figure(); plot(loss);
 figure(); subplot(2,1,1); heatmap(Y(1:numel(COURSES),:)); subplot(2,1,2); heatmap(a3(1:numel(COURSES),:));
+
 function [E] = getEdgeMatrix(s,t,unitCount)
     E = zeros(unitCount);
     for i = 1:numel(s)
@@ -32,7 +45,7 @@ function [E] = getEdgeMatrix(s,t,unitCount)
         E(t(i),s(i)) = 1; 
     end
 end
-
+%%
 function [loss, a3] = train(X,Y)
     % Assumes channels last. rows are instances
     
