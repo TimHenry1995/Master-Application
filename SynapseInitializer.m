@@ -4,25 +4,27 @@ classdef SynapseInitializer < Chromosome
    
     properties
         kind;
+        scale;
     end
     
     methods
-        function obj = SynapseInitializer(kind)
+        function obj = SynapseInitializer(kind, scale)
             %PARAMETERINITIALIZER Construct an instance of this class
             %   Detailed explanation goes here
             obj = obj@Chromosome();
             obj.kind = kind;
+            obj.scale = scale;
         end
         
         function newObj = replicate(obj)
-            newObj = SynapseInitializer(obj.kind);
+            newObj = SynapseInitializer(obj.kind, obj.scale);
         end
         
-        function [A] = call(obj, scale, inputSize, outputSize)
+        function [A] = call(obj, inputSize, outputSize)
             if obj.kind == "normal"
-              A = normrnd(0, scale, inputSize, outputSize);
+              A = normrnd(0, obj.scale, inputSize, outputSize);
             elseif obj.kind == "uniform"
-              A = scale*rand(inputSize, outputSize) - scale/2;
+              A = obj.scale*rand(inputSize, outputSize) - obj.scale/2;
             end
         end
         

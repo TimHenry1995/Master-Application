@@ -166,8 +166,8 @@ classdef Evolution
         
         function [evolution] = createExampleEvolution(populationSize, inputOutputNeuronCount)
             networkSizes = [NetworkSize(10), NetworkSize(20), NetworkSize(30)];
-            initializers = [SynapseInitializer("uniform"), SynapseInitializer("normal")];
-            activationFunctions = [ActivationFunction("sigmoid", 3), ActivationFunction("sigmoid", 1)];%, ActivationFunction("relu", 3), ActivationFunction("relu", 1)];
+            initializers = [SynapseInitializer("uniform", 0.33), SynapseInitializer("normal", 0.33), SynapseInitializer("uniform", 1), SynapseInitializer("normal", 1), SynapseInitializer("uniform", 3), SynapseInitializer("normal", 3)];
+            activationFunctions = [ActivationFunction("relu"), ActivationFunction("sigmoid")];%, ActivationFunction("relu", 3), ActivationFunction("relu", 1)];
             learningRateCalculators = [LearningRateCalculator(0.05, 0.9999), LearningRateCalculator(0.01, 0.99999)];
 
             % Set up the populaiton
