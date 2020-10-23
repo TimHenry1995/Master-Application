@@ -25,9 +25,9 @@ toc;
 % set(gcf,'WindowButtonDownFcn',@(f,~)edit_graph(f,h))
 %Use vectorization obj(1) = Individual(); obj(2) = etc
 
-% [loss, a3] = individual.train(X, Y, 1e4);
-% figure(); plot(loss);
-% figure(); subplot(2,1,1); heatmap(Y(1:numel(COURSES),:)); subplot(2,1,2); heatmap(a3(1:numel(COURSES),:));
+[~, loss, a3] = evolution.population{1}.train(X, Y, 1e4);
+figure(); plot(loss);
+figure(); subplot(2,1,1); heatmap(Y(1:numel(COURSES),:)); subplot(2,1,2); heatmap(a3(1:numel(COURSES),:));
 
 function [E] = getEdgeMatrix(s,t,unitCount)
     E = zeros(unitCount);

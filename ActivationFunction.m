@@ -25,7 +25,7 @@ classdef ActivationFunction < Chromosome
                 revert = @(x) x./(x+1e-5); % Evaluates to appr. 0 for x = 0 and appr. 1 for x > 0
             elseif obj.kind == "sigmoid"
                 activate = @(x) 1./(1+exp(1).^(-x));
-                revert = @(x) x.*(1-x); 
+                revert = @(x) (1-x).*sqrt(abs(x)); 
             end
         end
         

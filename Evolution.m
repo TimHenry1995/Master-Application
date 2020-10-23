@@ -89,9 +89,7 @@ classdef Evolution
                 % Replace current generation by new one
                 fitnessTrajectoryMeanStandardError(g,1) = mean(fitnessScores);
                 fitnessTrajectoryMeanStandardError(g,2) = std(fitnessScores);
-                if g < generationCount
-                    [obj, ~] = generate(obj, fitnessScores, 4);
-                end
+                [obj, ~] = generate(obj, fitnessScores, 4);
             end
             average = fitnessTrajectoryMeanStandardError(:,1)';
             error = fitnessTrajectoryMeanStandardError(:,2)'; 
