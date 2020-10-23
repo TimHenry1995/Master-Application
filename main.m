@@ -41,20 +41,19 @@ function [loss, a3] = train(X,Y)
     inputLayerSize = size(X,2);
     hiddenLayerSize = 25;
     outputLayerSize = size(Y,2);
-    epochCount = 200000;
+    epochCount = 5e4;
     activate = @(x) 1./(1+exp(1).^(-x));
     loss = nan(1,epochCount);
     % Training
     epsilon = sqrt(6)/sqrt(inputLayerSize + hiddenLayerSize); % Glorot Uniform initialization
-    Theta1 = (2 * rand([inputLayerSize + 1, hiddenLayerSize]) - 1) * epsilon;
+    Theta1 = (2 * rand([inputLayerSize, hiddenLayerSize]) - 1) * epsilon;
     epsilon = sqrt(6)/sqrt(hiddenLayerSize + outputLayerSize);
-    Theta2 = (2 * rand([hiddenLayerSize + 1, outputLayerSize]) - 1) * epsilon;
+    Theta2 = (2 * rand([hiddenLayerSize, outputLayerSize]) - 1) * epsilon;
 
     for e = 1:epochCount
         % Forward activation
-        bias = ones([size(X,1),1]);
-        a1 = [bias, X];
-        a2 = [bias, activate(a1*Theta1)];
+        a1 = X;
+        a2 = activate(a1*Theta1);
         a3 = activate(a2*Theta2);
 
         % Backward propagation 
@@ -72,7 +71,7 @@ function [loss, a3] = train(X,Y)
         delA2_delZ2 = a2.*(1-a2);
         delZ2_delTheta1 = a1;
         tmp = [delC_delA2 .* delA2_delZ2]';
-        delC_delTheta1 = tmp(2:end,:)*(delZ2_delTheta1); % [hidden_layer_size, output_layer_size + 1]
+        delC_delTheta1 = tmp(:,:)*(delZ2_delTheta1); % [hidden_layer_size, output_layer_size + 1]
 
         % Update the thetas in direction from input to output
         Theta1 = Theta1 - alpha * (1/size(X,1)) * (delC_delTheta1' + Theta1);

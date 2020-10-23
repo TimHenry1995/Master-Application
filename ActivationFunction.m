@@ -19,11 +19,13 @@ classdef ActivationFunction < Chromosome
             newObj = ActivationFunction(obj.kind, obj.scale);
         end
         
-        function [f] = call(obj)
+        function [activate, revert] = call(obj)
             if obj.kind == "relu"
-                f = max(0, obj.scale*x);
+                activate = @(x) max(0, obj.scale*x);
+                revert = @(x) 1;
             elseif obj.kind == "sigmoid"
-                f = @(x) 1/(1+e.^x);
+                activate = @(x) 1/(1+e.^x);
+                revert = @(x) x.*(1-x);
             end
         end
         
