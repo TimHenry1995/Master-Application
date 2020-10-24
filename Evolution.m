@@ -94,7 +94,7 @@ classdef Evolution
             average = fitnessTrajectoryMeanStandardError(:,1)';
             error = fitnessTrajectoryMeanStandardError(:,2)'; 
             plotConfidenceInterval(average, error)
-            title('Demonstration of Natural Selection'); xlabel('Generation'); ylabel('Fitness');
+            title('Natural Selection of Neural Networks'); xlabel('Generation'); ylabel('Fitness');
         end
     end
     
