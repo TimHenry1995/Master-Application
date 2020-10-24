@@ -36,3 +36,5 @@ function [E] = getEdgeMatrix(s,t,unitCount)
         E(t(i),s(i)) = 1; 
     end
 end
+
+

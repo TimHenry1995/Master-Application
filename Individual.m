@@ -22,10 +22,11 @@ classdef Individual
             lossTrajectory = nan(1,epochCount);
             alpha = obj.genotype.learningRateCalculator.alpha;
             % Training
+            bias = ones([size(X,1),1]);
             for e = 1:epochCount
                 % Forward activation
-                a1 = X;
-                a2 = activate(a1*obj.phenotype.theta1);
+                a1 = [bias, X];
+                a2 = [bias, activate(a1*obj.phenotype.theta1)];
                 a3 = activate(a2*obj.phenotype.theta2);
 
                 % Backward propagation 
@@ -43,7 +44,7 @@ classdef Individual
                 delA2_delZ2 = a2.*(1-a2);
                 delZ2_delTheta1 = a1;
                 tmp = [delC_delA2 .* delA2_delZ2]';
-                delC_delTheta1 = tmp(:,:)*(delZ2_delTheta1); % [hidden_layer_size, output_layer_size + 1]
+                delC_delTheta1 = tmp(2:end,:)*(delZ2_delTheta1); % [hidden_layer_size, output_layer_size + 1]
 
                 % Update the thetas in direction from input to output
                 obj.phenotype.theta1 = obj.phenotype.theta1 - alpha * (1/size(X,1)) * (delC_delTheta1' + obj.phenotype.theta1);

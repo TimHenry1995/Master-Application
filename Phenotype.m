@@ -13,8 +13,8 @@ classdef Phenotype
             %PHENOTYPE Construct an instance of this class
             %   Detailed explanation goes here
             obj.inputOutputNeuronCount = inputOutputNeuronCount;
-            obj.theta1 = genotype.synapseInitializer.call(inputOutputNeuronCount, genotype.networkSize.hiddenNeuronCount);
-            obj.theta2 = genotype.synapseInitializer.call(genotype.networkSize.hiddenNeuronCount, inputOutputNeuronCount);
+            obj.theta1 = genotype.synapseInitializer.call(inputOutputNeuronCount+1, genotype.networkSize.hiddenNeuronCount);
+            obj.theta2 = genotype.synapseInitializer.call(genotype.networkSize.hiddenNeuronCount+1, inputOutputNeuronCount);
         end
         
         function [string] = toString(obj)
